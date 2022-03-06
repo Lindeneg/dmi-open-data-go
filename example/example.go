@@ -30,7 +30,7 @@ func main() {
 func metObsExample() {
 	c := client.NewMetObsClient(os.Getenv("DMI_METOBS_API_KEY"))
 
-	obs, err := c.GetStations(client.GetStationsConfig{})
+	obs, err := c.GetObservations(client.GetObservationsConfig{Limit: 100})
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -44,7 +44,7 @@ func metObsExample() {
 func climateExample() {
 	c := client.NewClimateDataClient(os.Getenv("DMI_CLIMATE_API_KEY"))
 
-	obs, err := c.GetClimateData(client.GetClimateDataConfig{Parameter: constants.CMaxPressure})
+	obs, err := c.GetClimateData(client.GetClimateDataConfig{Parameter: constants.CMaxPressure, Limit: 100})
 	if err != nil {
 		fmt.Println(err)
 		return
