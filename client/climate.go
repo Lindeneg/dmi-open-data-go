@@ -79,7 +79,7 @@ func (client climateDataClient) GetClimateData(config GetClimateDataConfig) (get
 // Lists supported ClimateDataParameters
 // ClimateDataParameters are also accessible on 'constants'
 // All ClimateDataParameters in 'constants' are prefixed 'C'
-func (client climateDataClient) ListParameters() []constants.ClimateDataParameter {
+func (client climateDataClient) GetParameters() []constants.ClimateDataParameter {
 	return constants.ClimateDataParameters
 }
 

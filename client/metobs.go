@@ -137,7 +137,7 @@ func (client metObsClient) GetObservations(config GetObservationsConfig) (getObs
 // Lists supported MetObsParameters
 // MetObsParameters also accessible on 'constants'
 // All MetObsParameters in 'constants' are prefixed 'M'
-func (client metObsClient) ListParameters() []constants.MetObsParameter {
+func (client metObsClient) GetParameters() []constants.MetObsParameter {
 	return constants.MetObsParameters
 }
 
