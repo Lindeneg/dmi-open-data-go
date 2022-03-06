@@ -43,16 +43,21 @@ func (r *Request) Get(p string, q Query) {
 		if err != nil {
 			rs.Err = err
 		} else {
-			body, err := ioutil.ReadAll(res.Body)
-			if err != nil {
-				rs.Err = err
-			} else {
-				if rs.Code == 200 {
-					rs.Body = body
-				} else {
-					rs.Err = errors.New(string(body))
-				}
-			}
+			read(r, res)
+		}
+	}
+}
+
+func read(r *Request, res *http.Response) {
+	rs := r.Res
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		rs.Err = err
+	} else {
+		if rs.Code == 200 {
+			rs.Body = body
+		} else {
+			rs.Err = errors.New(string(body))
 		}
 	}
 }
