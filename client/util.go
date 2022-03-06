@@ -18,6 +18,9 @@ func constructTimeParam(fromTime time.Time, toTime time.Time) interface{} {
 	if !ftd && ttd {
 		return fromTime.Format(time.RFC3339)
 	}
+	if ftd && !ttd {
+		return toTime.Format(time.RFC3339)
+	}
 	return fmt.Sprintf("%s/%s", fromTime.Format(time.RFC3339), toTime.Format(time.RFC3339))
 }
 
