@@ -4,7 +4,7 @@ Simple [DMI API](https://confluence.govcloud.dk/display/FDAPI/Danish+Meteorologi
 
 I'd love to use the wrapper in Go and thus why this module is being created. 
 
-*Also, this is my first project in Go, any feedback is highly welcome.*
+*Also, as I'm quite new to Go, any feedback is highly welcome.*
 
 Todo:
 
