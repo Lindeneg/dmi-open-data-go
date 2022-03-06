@@ -10,5 +10,6 @@ Todo:
 
 1) Extend API support
 2) Implement tests
-3) Deploy package
-4) Create separate CLI package
+3) Implement channels
+4) Deploy package
+5) Create separate CLI package
