@@ -11,7 +11,7 @@ I'd love to use the wrapper in Go and thus why this module is being created.
 - Extend API support
 - Implement tests
 - Implement channels
-- Deploy package
+- Docs
 - Create separate CLI package
 
 ##### Usage
@@ -36,11 +36,10 @@ import (
 )
 
 func main() {
+  // also NewClimateDataClient
   c := client.NewMetObsClient(os.Getenv("DMI_METOBS_API_KEY"))
 
-  // returns unmarshaled geo-json data ... or an error
-  // uses the endpoint described here by swagger:
-  // https://dmigw.govcloud.dk/v2/metObs/swagger-ui/index.html?configUrl=/v2/metObs/api/swagger-config#/Met%20observation/getObservation
+  // example method: returns unmarshaled geo-json data ... or an error
   obs, err := c.GetObservations(client.GetObservationsConfig{Limit: 100})
 	
   if err != nil {
