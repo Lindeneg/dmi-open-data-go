@@ -18,7 +18,7 @@ I'd love to use the wrapper in Go and thus why this module is being created.
 
 1) Install 
 
-`go get -u github.com/lindeneg/dmi-open-data-go`
+`go get -u github.com/lindeneg/dmi-open-data-go/v2`
 
 2) Get API keys [here](https://confluence.govcloud.dk/pages/viewpage.action?pageId=26476690)
 
