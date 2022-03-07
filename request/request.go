@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/lindeneg/dmi-open-data-go/constants"
+	"github.com/lindeneg/dmi-open-data-go/v2/constants"
 )
 
 type Config struct {

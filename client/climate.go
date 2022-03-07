@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/lindeneg/dmi-open-data-go/constants"
-	"github.com/lindeneg/dmi-open-data-go/request"
+	"github.com/lindeneg/dmi-open-data-go/v2/constants"
+	"github.com/lindeneg/dmi-open-data-go/v2/request"
 )
 
 type climateDataClient struct {
