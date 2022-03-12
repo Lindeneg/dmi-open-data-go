@@ -3,157 +3,95 @@ package client
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"time"
 
 	"github.com/lindeneg/dmi-open-data-go/v2/constants"
 	"github.com/lindeneg/dmi-open-data-go/v2/request"
 )
 
 type metObsClient struct {
-	request  *request.Request
-	response *request.Response
+	r *request.RequestConfig
 }
 
 func NewMetObsClient(key string) metObsClient {
-	req, res := request.NewRequest(key, constants.APIMetObs)
-	return metObsClient{request: req, response: res}
-}
-
-type GetStationsConfig struct {
-	StationId int
-	Status    string
-	Type      string
-	Limit     int
-	Offset    int
-}
-
-/* I have a hard time extending structs in Go.
-To my knowledge you can't destructure properties
-from struct A into struct B, you'll have to compose
-it but that means adding on an extra property
-
-So I have to repeat some type definitions
-until I understand whats up.. */
-
-type getStationsResponse struct {
-	Type     string `json:"type"`
-	Features []struct {
-		Geometry   constants.GGeometry `json:"geometry"`
-		ID         string              `json:"id"`
-		Type       string              `json:"type"`
-		Properties struct {
-			Country           string   `json:"country"`
-			Name              string   `json:"name"`
-			Owner             string   `json:"owner"`
-			ParameterID       []string `json:"parameterId"`
-			StationID         string   `json:"stationId"`
-			Status            string   `json:"status"`
-			TimeCreated       string   `json:"timeCreated"`
-			TimeOperationFrom string   `json:"timeOperationFrom"`
-			TimeOperationTo   string   `json:"timeOperationTo"`
-			TimeUpdated       string   `json:"timeUpdated"`
-			TimeValidFrom     string   `json:"timeValidFrom"`
-			TimeValidTo       string   `json:"timeValidTo"`
-			Type              string   `json:"type"`
-		} `json:"properties"`
-	} `json:"features"`
-	TimeStamp      time.Time          `json:"timeStamp"`
-	NumberReturned int                `json:"numberReturned"`
-	Links          []constants.GLinks `json:"links"`
+	return metObsClient{request.New(key, constants.APIMetObs)}
 }
 
 // Get collection of stations in unmarshaled geo-json format
 // Accepts a range of parameters as specified in GetStationsConfig
-func (client metObsClient) GetStations(config GetStationsConfig) (getStationsResponse, error) {
-	result := getStationsResponse{}
+func (c metObsClient) GetStations(cf GetStationsConfig) (getStationsResponse, error) {
+	var (
+		err  error
+		res  getStationsResponse
+		body []byte
+	)
 	query := request.Query{
-		"stationId": maybeParam(config.StationId, nil, 0),
-		"status":    maybeParam(config.Status, nil, ""),
-		"type":      maybeParam(config.Status, nil, ""),
-		"limit":     maybeParam(config.Limit, 10000, 0),
-		"offset":    config.Offset,
+		"stationId": maybeParam(cf.StationId, nil, 0),
+		"status":    maybeParam(cf.Status, nil, ""),
+		"type":      maybeParam(cf.Status, nil, ""),
+		"limit":     maybeParam(cf.Limit, 10000, 0),
+		"offset":    cf.Offset,
 	}
-	client.request.Get("collections/station/items", query)
-	if client.response.Err != nil {
-		return result, client.response.Err
+	if body, err = c.r.Fetch("collections/station/items", query); err != nil {
+		return res, err
 	}
-	err := json.Unmarshal(client.response.Body, &result)
-	if err != nil {
-		return result, err
+	if err = json.Unmarshal(body, &res); err != nil {
+		return res, err
 	}
-	return result, nil
-}
-
-type GetObservationsConfig struct {
-	Parameter constants.MetObsParameter
-	StationId int
-	FromTime  time.Time
-	ToTime    time.Time
-	Limit     int
-	Offset    int
-}
-
-type getObservationsResponse struct {
-	Type     string `json:"type"`
-	Features []struct {
-		Geometry   constants.GGeometry `json:"geometry"`
-		ID         string              `json:"id"`
-		Type       string              `json:"type"`
-		Properties struct {
-			Created     time.Time `json:"created"`
-			Observed    time.Time `json:"observed"`
-			ParameterID string    `json:"parameterId"`
-			StationID   string    `json:"stationId"`
-			Value       float64   `json:"value"`
-		} `json:"properties"`
-	} `json:"features"`
-	TimeStamp      time.Time          `json:"timeStamp"`
-	NumberReturned int                `json:"numberReturned"`
-	Links          []constants.GLinks `json:"links"`
+	return res, nil
 }
 
 // Get raw observations in unmarshaled geo-json format
-// Accepts a range of parameters as specified in GetObservationsConfig.
-func (client metObsClient) GetObservations(config GetObservationsConfig) (getObservationsResponse, error) {
-	result := getObservationsResponse{}
+// Accepts a range of parameters as specified in GetObservationsConfig
+func (c metObsClient) GetObservations(cf GetObservationsConfig) (getObservationsResponse, error) {
+	var (
+		err  error
+		res  getObservationsResponse
+		body []byte
+	)
 	query := request.Query{
-		"parameterId": maybeParam(string(config.Parameter), nil, ""),
-		"stationId":   maybeParam(config.StationId, nil, 0),
-		"datetime":    constructTimeParam(config.FromTime, config.ToTime),
-		"limit":       maybeParam(config.Limit, 10000, 0),
-		"offset":      config.Offset,
+		"parameterId": maybeParam(string(cf.Parameter), nil, ""),
+		"stationId":   maybeParam(cf.StationId, nil, 0),
+		"datetime":    constructTimeParam(cf.FromTime, cf.ToTime),
+		"limit":       maybeParam(cf.Limit, 10000, 0),
+		"offset":      cf.Offset,
 	}
-	client.request.Get("collections/observation/items", query)
-	if client.response.Err != nil {
-		return result, client.response.Err
+	if body, err = c.r.Fetch("collections/observation/items", query); err != nil {
+		return res, err
 	}
-	err := json.Unmarshal(client.response.Body, &result)
-	if err != nil {
-		return result, err
+	if err = json.Unmarshal(body, &res); err != nil {
+		return res, err
 	}
-	return result, nil
+	return res, nil
 }
 
-// TODO GetClosetStation
-// take tuple of coords
-// call client.GetStations()
-// use haversine to cmp dist
-// return closet station
-func (client metObsClient) GetClosetStation() {
-	stations, _ := client.GetStations(GetStationsConfig{})
-	features := stations.Features
-	for _, station := range features {
-		lat := station.Geometry.Coordinates[1]
-		lon := station.Geometry.Coordinates[0]
-		fmt.Println(lat, lon)
+// Get closet station given a set of coordinates
+// Accepts a range of parameters as specified in GetClosetStationConfig
+func (c metObsClient) GetClosetStation(cf GetClosetStationConfig) (metObsStationFeature, error) {
+	var (
+		err  error
+		res  getStationsResponse
+		cs   metObsStationFeature
+		dist float64 = 0xffffff
+	)
+	if res, err = c.GetStations(cf.Filter); err != nil {
+		return cs, err
 	}
+	st := res.Features
+	for _, s := range st {
+		lat := s.Geometry.Coordinates[1]
+		lon := s.Geometry.Coordinates[0]
+		if curdist := distance(cf.Lat, cf.Lon, lat, lon); curdist < dist {
+			dist = curdist
+			cs = s
+		}
+	}
+	return cs, nil
 }
 
 // Lists supported MetObsParameters
 // MetObsParameters also accessible on 'constants'
 // All MetObsParameters in 'constants' are prefixed 'M'
-func (client metObsClient) GetParameters() []constants.MetObsParameter {
+func (metObsClient) GetParameters() []constants.MetObsParameter {
 	return constants.MetObsParameters
 }
 

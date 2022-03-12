@@ -3,83 +3,48 @@ package client
 import (
 	"encoding/json"
 	"errors"
-	"time"
 
 	"github.com/lindeneg/dmi-open-data-go/v2/constants"
 	"github.com/lindeneg/dmi-open-data-go/v2/request"
 )
 
 type climateDataClient struct {
-	request  *request.Request
-	response *request.Response
+	r *request.RequestConfig
 }
 
-func NewClimateDataClient(key string) climateDataClient {
-	req, res := request.NewRequest(key, constants.APIClimateData)
-	return climateDataClient{request: req, response: res}
-}
-
-type GetClimateDataConfig struct {
-	Parameter      constants.ClimateDataParameter
-	StationId      int
-	FromTime       time.Time
-	ToTime         time.Time
-	TimeResolution string
-	Limit          int
-	Offset         int
-}
-
-type getClimateDataResponse struct {
-	Type     string `json:"type"`
-	Features []struct {
-		Geometry   constants.GGeometry `json:"geometry"`
-		ID         string              `json:"id"`
-		Type       string              `json:"type"`
-		Properties struct {
-			CalculatedAt   time.Time `json:"calculatedAt"`
-			Created        time.Time `json:"created"`
-			From           time.Time `json:"from"`
-			ParameterID    string    `json:"parameterId"`
-			QcStatus       string    `json:"qcStatus"`
-			StationID      string    `json:"stationId"`
-			TimeResolution string    `json:"timeResolution"`
-			To             time.Time `json:"to"`
-			Validity       bool      `json:"validity"`
-			Value          float64   `json:"value"`
-		} `json:"properties"`
-	} `json:"features"`
-	TimeStamp      time.Time          `json:"timeStamp"`
-	NumberReturned int                `json:"numberReturned"`
-	Links          []constants.GLinks `json:"links"`
+func NewClimateDataClient(k string) climateDataClient {
+	return climateDataClient{request.New(k, constants.APIClimateData)}
 }
 
 // Get raw climate data in unmarshaled geo-json format
 // Accepts a range of parameters as specified in GetClimateDataConfig.
-func (client climateDataClient) GetClimateData(config GetClimateDataConfig) (getClimateDataResponse, error) {
-	result := getClimateDataResponse{}
+func (c climateDataClient) GetClimateData(cf GetClimateDataConfig) (getClimateDataResponse, error) {
+	var (
+		err  error
+		res  getClimateDataResponse
+		body []byte
+	)
 	query := request.Query{
-		"parameterId":    maybeParam(string(config.Parameter), nil, ""),
-		"stationId":      maybeParam(config.StationId, nil, 0),
-		"datetime":       constructTimeParam(config.FromTime, config.ToTime),
-		"timeResolution": maybeParam(config.TimeResolution, nil, ""),
-		"limit":          maybeParam(config.Limit, 1000, 0),
-		"offset":         config.Offset,
+		"parameterId":    maybeParam(string(cf.Parameter), nil, ""),
+		"stationId":      maybeParam(cf.StationId, nil, 0),
+		"datetime":       constructTimeParam(cf.FromTime, cf.ToTime),
+		"timeResolution": maybeParam(cf.TimeResolution, nil, ""),
+		"limit":          maybeParam(cf.Limit, 1000, 0),
+		"offset":         cf.Offset,
 	}
-	client.request.Get("collections/stationValue/items", query)
-	if client.response.Err != nil {
-		return result, client.response.Err
+	if body, err = c.r.Fetch("collections/stationValue/items", query); err != nil {
+		return res, err
 	}
-	err := json.Unmarshal(client.response.Body, &result)
-	if err != nil {
-		return result, err
+	if err = json.Unmarshal(body, &res); err != nil {
+		return res, err
 	}
-	return result, nil
+	return res, nil
 }
 
 // Lists supported ClimateDataParameters
 // ClimateDataParameters are also accessible on 'constants'
 // All ClimateDataParameters in 'constants' are prefixed 'C'
-func (client climateDataClient) GetParameters() []constants.ClimateDataParameter {
+func (climateDataClient) GetParameters() []constants.ClimateDataParameter {
 	return constants.ClimateDataParameters
 }
 
