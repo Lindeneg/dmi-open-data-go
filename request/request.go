@@ -8,56 +8,56 @@ import (
 	"github.com/lindeneg/dmi-open-data-go/v2/constants"
 )
 
-type Config struct {
+type RequestConfig struct {
 	Key  string
 	Type constants.ApiType
 }
 
-type Request struct {
-	Res *Response
-	Config
+type Fetcher interface {
+	Fetch(url string, q Query) (body []byte, err error)
 }
 
 type Query map[string]interface{}
 
-func NewRequest(k string, a constants.ApiType) (*Request, *Response) {
-	res := &Response{}
-	req := &Request{
-		Res: res,
-		Config: Config{
-			Key:  k,
-			Type: a,
-		},
-	}
-	return req, res
+func New(k string, t constants.ApiType) *RequestConfig {
+	return &RequestConfig{Key: k, Type: t}
 }
 
-func (r *Request) Get(p string, q Query) {
-	rs := r.Res
-	url, err := constructUrl(*r, p, q)
-	if err != nil {
-		rs.Err = err
-	} else {
-		res, err := http.Get(url)
-		rs.Code = res.StatusCode
-		if err != nil {
-			rs.Err = err
-		} else {
-			read(r, res)
-		}
+func (c *RequestConfig) Fetch(path string, q Query) ([]byte, error) {
+	var (
+		err  error
+		url  string
+		body []byte
+	)
+	if url, err = constructUrl(*c, path, q); err != nil {
+		return body, err
 	}
+	if body, err = getBody(url); err != nil {
+		return body, err
+	}
+	return body, nil
 }
 
-func read(r *Request, res *http.Response) {
-	rs := r.Res
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		rs.Err = err
-	} else {
-		if rs.Code == 200 {
-			rs.Body = body
-		} else {
-			rs.Err = errors.New(string(body))
-		}
+func getBody(url string) ([]byte, error) {
+	var (
+		err  error
+		body []byte
+		resp *http.Response
+	)
+
+	if resp, err = http.Get(url); err != nil {
+		return body, err
 	}
+
+	defer resp.Body.Close()
+
+	if body, err = ioutil.ReadAll(resp.Body); err != nil {
+		return body, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return body, errors.New(string(body))
+	}
+
+	return body, nil
 }
