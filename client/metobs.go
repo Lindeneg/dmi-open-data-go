@@ -3,6 +3,7 @@ package client
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/lindeneg/dmi-open-data-go/v2/constants"
@@ -20,8 +21,11 @@ func NewMetObsClient(key string) metObsClient {
 }
 
 type GetStationsConfig struct {
-	Limit  int
-	Offset int
+	StationId int
+	Status    string
+	Type      string
+	Limit     int
+	Offset    int
 }
 
 /* I have a hard time extending structs in Go.
@@ -64,8 +68,11 @@ type getStationsResponse struct {
 func (client metObsClient) GetStations(config GetStationsConfig) (getStationsResponse, error) {
 	result := getStationsResponse{}
 	query := request.Query{
-		"limit":  maybeParam(config.Limit, 10000, 0),
-		"offset": config.Offset,
+		"stationId": maybeParam(config.StationId, nil, 0),
+		"status":    maybeParam(config.Status, nil, ""),
+		"type":      maybeParam(config.Status, nil, ""),
+		"limit":     maybeParam(config.Limit, 10000, 0),
+		"offset":    config.Offset,
 	}
 	client.request.Get("collections/station/items", query)
 	if client.response.Err != nil {
@@ -133,6 +140,15 @@ func (client metObsClient) GetObservations(config GetObservationsConfig) (getObs
 // call client.GetStations()
 // use haversine to cmp dist
 // return closet station
+func (client metObsClient) GetClosetStation() {
+	stations, _ := client.GetStations(GetStationsConfig{})
+	features := stations.Features
+	for _, station := range features {
+		lat := station.Geometry.Coordinates[1]
+		lon := station.Geometry.Coordinates[0]
+		fmt.Println(lat, lon)
+	}
+}
 
 // Lists supported MetObsParameters
 // MetObsParameters also accessible on 'constants'
