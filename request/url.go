@@ -7,12 +7,12 @@ import (
 	"github.com/lindeneg/dmi-open-data-go/v2/constants"
 )
 
-func constructUrl(r Request, p string, q Query) (string, error) {
-	base := fmt.Sprintf("%s/v2/%s/%s", constants.BaseUrl, r.Config.Type, p)
-	if r.Config.Key == "" {
+func constructUrl(r RequestConfig, p string, q Query) (string, error) {
+	base := fmt.Sprintf("%s/v2/%s/%s", constants.BaseUrl, r.Type, p)
+	if r.Key == "" {
 		return "", errors.New("no API key specified")
 	}
-	q["api-key"] = r.Config.Key
+	q["api-key"] = r.Key
 	return appendQuery(base, q), nil
 }
 
