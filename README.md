@@ -2,27 +2,15 @@
 
 Simple [DMI API](https://confluence.govcloud.dk/display/FDAPI/Danish+Meteorological+Institute+-+Open+Data) wrapper. Heavily inspired by [this](https://github.com/LasseRegin/dmi-open-data) Python library made by [Lasse Regin](https://github.com/LasseRegin) of [Woodsense](https://en.woodsense.dk/).
 
-I'd love to use the wrapper in Go and thus why this module is being created. 
-
-*Also, as I'm quite new to Go, any feedback is highly welcome.*
-
-##### Todo
-
-- Extend API support
-- Implement tests
-- Implement channels
-- Docs
-- Create separate CLI package
-
 ##### Usage
 
-1) Install 
+Install 
 
 `go get -u github.com/lindeneg/dmi-open-data-go/v2`
 
-2) Get API keys [here](https://confluence.govcloud.dk/pages/viewpage.action?pageId=26476690)
+Get API keys [here](https://confluence.govcloud.dk/pages/viewpage.action?pageId=26476690)
 
-3) Get some data
+Get some data
 ```Go
 // main.go
 package main
@@ -55,5 +43,5 @@ func main() {
 }
 ```
 
-4) Run it!
+Run it!
 `go run main.go`
