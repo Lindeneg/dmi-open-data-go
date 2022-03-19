@@ -1,6 +1,7 @@
 package cli
 
 func Init() {
-	parseConfig()
-	runActions()
+	cf := newConfig()
+	cf.Parse()
+	runActions(cf)
 }

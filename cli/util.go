@@ -1,0 +1,51 @@
+package cli
+
+import (
+	"fmt"
+	"os"
+)
+
+type Color string
+
+const (
+	ColorRed   Color = "\u001b[31m"
+	ColorGreen Color = "\u001b[32m"
+	ColorBlue  Color = "\u001b[36m"
+	ColorReset Color = "\u001b[0m"
+)
+
+func colorize(color Color, message string) {
+	fmt.Println(fmt.Sprintf("%s%s%s", string(color), message, string(ColorReset)))
+}
+
+func errExit(m string) {
+	colorize(ColorRed, m+"\n")
+	os.Exit(1)
+}
+
+func usage() {
+	fmt.Println(`usage: dmi-open-data
+src:   https://github.com/lindeneg/dmi-open-data-go
+
+go run dmi-open-data [...ARGS]
+
+ARGS:
+
+-c  --climate-key  [STR]   DMI climateData API key
+-m  --metobs-key   [STR]   DMI metObs API key
+-p  --file-path    [STR]   path to write json outputs to
+-l  --limit        [INT]   set parameter 'limit'
+-f  --offset       [INT]   set parameter 'offset'
+-a  --lat          [FLOAT] set latitude
+-n  --lon          [FLOAT] set longitude
+-t  --type         [STR]   set parameter 'type'
+-st --status       [STR]   set parameter 'status'
+-pi --param-id     [INT]   set parameter 'parameterId'
+-si --station-id   [INT]   set parameter 'stationId'
+-cd --climate-data 	   run climateData method 'GetClimateData'
+-s  --stations 	           run metObs method 'GetStations'
+-o  --observations 	   run metObs method 'GetObservations'
+-cs --closet-station 	   run metObs method 'GetClosetStation'
+-d  --dry-run 	           do not write anything to disk
+-h  --help                 outputs the usage`)
+}

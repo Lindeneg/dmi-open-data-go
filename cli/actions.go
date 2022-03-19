@@ -1,67 +1,57 @@
 package cli
 
 import (
-	"flag"
 	"fmt"
-	"os"
-	"sync"
 
 	"github.com/lindeneg/dmi-open-data-go/v2/client"
 	"github.com/lindeneg/dmi-open-data-go/v2/file"
 )
 
-type actions struct {
-	data map[string]interface{}
-	err  map[string]interface{}
-	done chan struct{}
-	mux  sync.Mutex
-	wg   sync.WaitGroup
-}
-
-func runActions() {
-	actions := actions{}
-	runs := 0
-	c := client.NewClimateDataClient(*climateKey)
-	m := client.NewMetObsClient(*metobsKey)
-	if *getClimateData {
-		go func() {
-			colorize(ColorBlue, "running getClimateData")
-			actions.mux.Lock()
-			actions.data["getClimateData"], actions.err["getClimatedata"] = c.GetClimateData(client.GetClimateDataConfig{})
-			actions.mux.Unlock()
-			write(*filePath, actions.data["getClimateData"])
+func runActions(cf *config) {
+	c := client.NewClimateDataClient(cf.climateKey)
+	//m := client.NewMetObsClient(*metobsKey)
+	if cf.getClimateData {
+		func() {
+			runAction(cf, "getClimateData", "climate_data", func() (interface{}, error) {
+				return c.GetClimateData(client.GetClimateDataConfig{})
+			})
 		}()
-		runs++
 	}
-	if *getStations {
-		colorize(ColorBlue, "running getStations")
-		runs++
+	if cf.getStations {
+		colorize(ColorBlue, "getStations: initialize")
 	}
-	if *getObservations {
-		colorize(ColorBlue, "running getObservations")
-		runs++
+	if cf.getObservations {
+		colorize(ColorBlue, "getObservations: initialize")
 	}
-	if *getClosetStation {
-		colorize(ColorBlue, "running getClosetStation")
-		runs++
+	if cf.getClosetStation {
+		colorize(ColorBlue, "getClosetStation: initialize")
 	}
-	checkRuns(runs)
 
 }
 
-func checkRuns(runs int) {
-	if runs == 0 {
-		colorize(ColorRed, "please specify at least one action")
-		flag.Usage()
-		os.Exit(1)
+func runAction(cf *config, scope string, filename string, fn func() (interface{}, error)) {
+	var (
+		res  interface{}
+		err  error
+		name string
+	)
+	colorize(ColorBlue, fmt.Sprintf("%s: initialize", scope))
+	if res, err = fn(); err != nil {
+		colorize(ColorRed, fmt.Sprintf("%s error: %v", scope, err))
+	} else {
+		colorize(ColorGreen, fmt.Sprintf("%s: request successful", scope))
+		if !cf.dryRun {
+			if name, err = write(cf.filePath, filename, res); err != nil {
+				colorize(ColorRed, fmt.Sprintf("%s error: %v", scope, err))
+			} else {
+				colorize(ColorGreen, fmt.Sprintf("%s: wrote file '%s'", scope, name))
+			}
+		}
 	}
 }
 
-func write(filename string, data interface{}) {
-	if *dryRun {
-		return
-	}
-	name := fmt.Sprintf("%s/%s", *filePath, filename)
-	colorize(ColorBlue, fmt.Sprintf("writing %s to disk", name))
-	file.Write(name, data)
+func write(path string, filename string, data interface{}) (string, error) {
+	name := fmt.Sprintf("%s/%s.json", path, filename)
+	err := file.Write(name, data)
+	return name, err
 }
