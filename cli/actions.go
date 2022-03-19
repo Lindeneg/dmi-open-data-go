@@ -119,7 +119,9 @@ func addActions(ac *actions) {
 				} else {
 					runAction(cf, ch, wg, "getClosetStation", "closet_station", func() (interface{}, error) {
 						res, dist, err := ac.m.GetClosetStation(client.GetClosetStationConfig{Lat: cf.lat, Lon: cf.lon})
-						colorize(ColorBlue, fmt.Sprintf("getClosetStation distance: found station %dkm away", int(dist)))
+						if err == nil {
+							colorize(ColorBlue, fmt.Sprintf("getClosetStation distance: found station %dkm away", int(dist)))
+						}
 						return res, err
 					})
 				}
