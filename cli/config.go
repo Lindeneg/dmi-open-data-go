@@ -53,7 +53,7 @@ func (c *config) Parse() {
 			return
 		}
 	}
-	errExit("error: no valid arguments specified. run with '-h' or '--help' for usage")
+	errExit("no valid arguments specified")
 }
 
 func rmFilePathTailSlash(filePath *string) {
