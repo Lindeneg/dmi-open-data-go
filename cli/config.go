@@ -169,7 +169,7 @@ func parseArg(c *config, arg string, i int) (int, interface{}) {
 		os.Exit(0)
 
 	default:
-		colorize(ColorBlue, fmt.Sprintf("warning: argument '%s' is not recognized", arg))
+		colorize(ColorRed, fmt.Sprintf("warning: argument '%s' is not recognized", arg))
 	}
 	return 0, nil
 }
