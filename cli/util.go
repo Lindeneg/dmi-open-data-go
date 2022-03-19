@@ -21,7 +21,7 @@ func colorize(color Color, message string) {
 }
 
 func errExit(m string) {
-	colorize(ColorRed, m+"\n")
+	colorize(ColorRed, "error: "+m+", run with '-h' or '--help' for usage\n")
 	os.Exit(1)
 }
 
