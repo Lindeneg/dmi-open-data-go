@@ -74,8 +74,6 @@ func runAction(cf *config, scope string, filename string, fn func() (interface{}
 			} else {
 				colorize(ColorGreen, fmt.Sprintf("%s: wrote file '%s'", scope, name))
 			}
-		} else {
-			colorize(ColorBlue, fmt.Sprintf("%s: dry-run detected, will not write to disk", scope))
 		}
 	}
 }

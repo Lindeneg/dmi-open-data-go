@@ -47,6 +47,9 @@ func (c *config) Parse() {
 		rmFilePathTailSlash(&c.filePath)
 		if valid > 0 {
 			colorize(ColorBlue, "successfully parsed config")
+			if c.dryRun {
+				colorize(ColorBlue, "dry-run detected, will not write to disk")
+			}
 			return
 		}
 	}
