@@ -8,17 +8,17 @@ import (
 	"github.com/lindeneg/dmi-open-data-go/v2/request"
 )
 
-type climateDataClient struct {
+type ClimateDataClient struct {
 	r *request.RequestConfig
 }
 
-func NewClimateDataClient(k string) climateDataClient {
-	return climateDataClient{request.New(k, constants.APIClimateData)}
+func NewClimateDataClient(k string) ClimateDataClient {
+	return ClimateDataClient{request.New(k, constants.APIClimateData)}
 }
 
 // Get raw climate data in unmarshaled geo-json format
 // Accepts a range of parameters as specified in GetClimateDataConfig.
-func (c climateDataClient) GetClimateData(cf GetClimateDataConfig) (getClimateDataResponse, error) {
+func (c ClimateDataClient) GetClimateData(cf GetClimateDataConfig) (getClimateDataResponse, error) {
 	var (
 		err  error
 		res  getClimateDataResponse
@@ -44,7 +44,7 @@ func (c climateDataClient) GetClimateData(cf GetClimateDataConfig) (getClimateDa
 // Lists supported ClimateDataParameters
 // ClimateDataParameters are also accessible on 'constants'
 // All ClimateDataParameters in 'constants' are prefixed 'C'
-func (climateDataClient) GetParameters() []constants.ClimateDataParameter {
+func (ClimateDataClient) GetParameters() []constants.ClimateDataParameter {
 	return constants.ClimateDataParameters
 }
 
