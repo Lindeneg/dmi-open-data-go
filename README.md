@@ -1,7 +1,12 @@
 
 Simple [DMI API](https://confluence.govcloud.dk/display/FDAPI/Danish+Meteorological+Institute+-+Open+Data) wrapper. Heavily inspired by [this](https://github.com/LasseRegin/dmi-open-data) Python library made by [Lasse Regin](https://github.com/LasseRegin) of [Woodsense](https://en.woodsense.dk/).
 
-Get API keys [here](https://confluence.govcloud.dk/pages/viewpage.action?pageId=26476690)
+Get API keys [here](https://confluence.govcloud.dk/pages/viewpage.action?pageId=26476690).
+
+The two API's used are **Meteorological Observation** (*metObs*) and **Climate Data** (*climateData*).
+
+It is recommended to set the API keys as environmental variables with these respective variables:
+`$DMI_CLIMATE_API_KEY` and `$DMI_METOBS_API_KEY`
 
 
 ##### Usage CLI
