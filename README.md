@@ -11,17 +11,17 @@ It is recommended to set the API keys as environmental variables with these resp
 
 ##### Usage CLI
 
-Install
-
 ```
+# Download
 git clone https://github.com/Lindeneg/dmi-open-data-go.git
 
-cd dmi-open-data-go
-
-go build dmi-open-data.go
+# Build
+cd dmi-open-data-go && go build dmi-open-data.go
 ```
 
 ```
+# Run
+
 $ ./dmi-open-data [...ARGS]
 
 ARGS:
