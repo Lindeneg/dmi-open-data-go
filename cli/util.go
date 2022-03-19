@@ -27,7 +27,7 @@ func errExit(m string) {
 
 func getClimateDataConfig(cf *config) client.GetClimateDataConfig {
 	param, err := client.GetClimateDataParameter(cf.parameterId)
-	if err != nil {
+	if cf.parameterId != "" && err != nil {
 		colorize(ColorRed, fmt.Sprintf("error: %v", err))
 	}
 	return client.GetClimateDataConfig{
@@ -50,7 +50,7 @@ func getStationsConfig(cf *config) client.GetStationsConfig {
 
 func getObservationsConfig(cf *config) client.GetObservationsConfig {
 	param, err := client.GetMetObsParameter(cf.parameterId)
-	if err != nil {
+	if cf.parameterId != "" && err != nil {
 		colorize(ColorRed, fmt.Sprintf("error: %v", err))
 	}
 	return client.GetObservationsConfig{
