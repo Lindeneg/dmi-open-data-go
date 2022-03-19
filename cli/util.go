@@ -3,6 +3,8 @@ package cli
 import (
 	"fmt"
 	"os"
+
+	"github.com/lindeneg/dmi-open-data-go/v2/client"
 )
 
 type Color string
@@ -21,6 +23,36 @@ func colorize(color Color, message string) {
 func errExit(m string) {
 	colorize(ColorRed, m+"\n")
 	os.Exit(1)
+}
+
+func getClimateDataConfig(cf *config) client.GetClimateDataConfig {
+	param, _ := client.GetClimateDataParameter(cf.parameterId)
+	return client.GetClimateDataConfig{
+		Parameter: param,
+		StationId: int(cf.stationId),
+		Limit:     int(cf.limit),
+		Offset:    int(cf.offset),
+	}
+}
+
+func getStationsConfig(cf *config) client.GetStationsConfig {
+	return client.GetStationsConfig{
+		Status:    cf.status,
+		Type:      cf.ptype,
+		StationId: int(cf.stationId),
+		Limit:     int(cf.limit),
+		Offset:    int(cf.offset),
+	}
+}
+
+func getObservationsConfig(cf *config) client.GetObservationsConfig {
+	param, _ := client.GetMetObsParameter(cf.parameterId)
+	return client.GetObservationsConfig{
+		Parameter: param,
+		StationId: int(cf.stationId),
+		Limit:     int(cf.limit),
+		Offset:    int(cf.offset),
+	}
 }
 
 func usage() {

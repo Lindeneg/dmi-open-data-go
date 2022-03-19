@@ -2,31 +2,59 @@ package cli
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/lindeneg/dmi-open-data-go/v2/client"
 	"github.com/lindeneg/dmi-open-data-go/v2/file"
 )
 
+var wg sync.WaitGroup
+
 func runActions(cf *config) {
 	c := client.NewClimateDataClient(cf.climateKey)
-	//m := client.NewMetObsClient(*metobsKey)
+	m := client.NewMetObsClient(cf.metobsKey)
 	if cf.getClimateData {
-		func() {
+		wg.Add(1)
+		go func() {
 			runAction(cf, "getClimateData", "climate_data", func() (interface{}, error) {
-				return c.GetClimateData(client.GetClimateDataConfig{})
+				return c.GetClimateData(getClimateDataConfig(cf))
 			})
+			wg.Done()
 		}()
 	}
 	if cf.getStations {
-		colorize(ColorBlue, "getStations: initialize")
+		wg.Add(1)
+		go func() {
+			runAction(cf, "getStations", "stations", func() (interface{}, error) {
+				return m.GetStations(getStationsConfig(cf))
+			})
+			wg.Done()
+		}()
 	}
 	if cf.getObservations {
-		colorize(ColorBlue, "getObservations: initialize")
+		wg.Add(1)
+		go func() {
+			runAction(cf, "getObservations", "observations", func() (interface{}, error) {
+				return m.GetObservations(getObservationsConfig(cf))
+			})
+			wg.Done()
+		}()
 	}
 	if cf.getClosetStation {
-		colorize(ColorBlue, "getClosetStation: initialize")
+		mc := newConfig()
+		if mc.lat == cf.lat || mc.lon == cf.lon {
+			colorize(ColorRed, "getClosetStation error: please specify '--lat' and '--lon'")
+		} else {
+			wg.Add(1)
+			go func() {
+				runAction(cf, "getClosetStation", "closet_station", func() (interface{}, error) {
+					return m.GetClosetStation(client.GetClosetStationConfig{Lat: cf.lat, Lon: cf.lon})
+				})
+				wg.Done()
+			}()
+		}
 	}
-
+	wg.Wait()
 }
 
 func runAction(cf *config, scope string, filename string, fn func() (interface{}, error)) {
@@ -39,13 +67,15 @@ func runAction(cf *config, scope string, filename string, fn func() (interface{}
 	if res, err = fn(); err != nil {
 		colorize(ColorRed, fmt.Sprintf("%s error: %v", scope, err))
 	} else {
-		colorize(ColorGreen, fmt.Sprintf("%s: request successful", scope))
+		colorize(ColorBlue, fmt.Sprintf("%s: request successful", scope))
 		if !cf.dryRun {
 			if name, err = write(cf.filePath, filename, res); err != nil {
 				colorize(ColorRed, fmt.Sprintf("%s error: %v", scope, err))
 			} else {
 				colorize(ColorGreen, fmt.Sprintf("%s: wrote file '%s'", scope, name))
 			}
+		} else {
+			colorize(ColorBlue, fmt.Sprintf("%s: dry-run detected, will not write to disk", scope))
 		}
 	}
 }
