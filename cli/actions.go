@@ -11,9 +11,11 @@ import (
 var wg sync.WaitGroup
 
 func runActions(cf *config) {
+	didSomething := false
 	c := client.NewClimateDataClient(cf.climateKey)
 	m := client.NewMetObsClient(cf.metobsKey)
 	if cf.getClimateData {
+		didSomething = true
 		wg.Add(1)
 		go func() {
 			runAction(cf, "getClimateData", "climate_data", func() (interface{}, error) {
@@ -23,6 +25,7 @@ func runActions(cf *config) {
 		}()
 	}
 	if cf.getStations {
+		didSomething = true
 		wg.Add(1)
 		go func() {
 			runAction(cf, "getStations", "stations", func() (interface{}, error) {
@@ -32,6 +35,7 @@ func runActions(cf *config) {
 		}()
 	}
 	if cf.getObservations {
+		didSomething = true
 		wg.Add(1)
 		go func() {
 			runAction(cf, "getObservations", "observations", func() (interface{}, error) {
@@ -41,20 +45,24 @@ func runActions(cf *config) {
 		}()
 	}
 	if cf.getClosetStation {
-		mc := newConfig()
-		if mc.lat == cf.lat || mc.lon == cf.lon {
-			colorize(ColorRed, "getClosetStation error: please specify '--lat' and '--lon'")
-		} else {
-			wg.Add(1)
-			go func() {
+		didSomething = true
+		wg.Add(1)
+		go func() {
+			mc := newConfig()
+			if mc.lat == cf.lat || mc.lon == cf.lon {
+				colorize(ColorRed, "getClosetStation error: please specify '--lat' and '--lon'")
+			} else {
 				runAction(cf, "getClosetStation", "closet_station", func() (interface{}, error) {
 					return m.GetClosetStation(client.GetClosetStationConfig{Lat: cf.lat, Lon: cf.lon})
 				})
-				wg.Done()
-			}()
-		}
+			}
+			wg.Done()
+		}()
 	}
 	wg.Wait()
+	if !didSomething {
+		errExit("please invoke at least one method")
+	}
 }
 
 func runAction(cf *config, scope string, filename string, fn func() (interface{}, error)) {
