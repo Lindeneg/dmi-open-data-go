@@ -42,6 +42,7 @@ ARGS:
 -o  --observations 	   run metObs method 'GetObservations'
 -cs --closet-station 	   run metObs method 'GetClosetStation'
 -d  --dry-run 	           do not write anything to disk
+-sn --silent 	           do not print logs to stdout
 -h  --help                 outputs the usage
 ```
 
