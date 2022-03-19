@@ -119,6 +119,10 @@ func parseArg(c *config, arg string, i int) (int, interface{}) {
 		c.dryRun = true
 		return 1, nil
 
+	case "-sn", "--silent":
+		silent = true
+		return 1, nil
+
 	case "-cd", "--climate-data":
 		c.getClimateData = true
 		return 1, nil
