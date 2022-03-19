@@ -8,80 +8,122 @@ import (
 	"github.com/lindeneg/dmi-open-data-go/v2/file"
 )
 
-var wg sync.WaitGroup
+type tch chan func()
 
-func runActions(cf *config) {
-	didSomething := false
+type action struct {
+	fn func()
+}
+
+type actions struct {
+	cf *config
+	wg *sync.WaitGroup
+	ch tch
+	as []action
+	c  client.ClimateDataClient
+	m  client.MetObsClient
+}
+
+func newActions(cf *config) *actions {
+	var wg sync.WaitGroup
+	ch := make(tch)
 	c := client.NewClimateDataClient(cf.climateKey)
 	m := client.NewMetObsClient(cf.metobsKey)
-	if cf.getClimateData {
-		didSomething = true
-		wg.Add(1)
-		go func() {
-			runAction(cf, "getClimateData", "climate_data", func() (interface{}, error) {
-				return c.GetClimateData(getClimateDataConfig(cf))
-			})
-			wg.Done()
-		}()
+	ac := actions{ch: ch, wg: &wg, cf: cf, c: c, m: m}
+	addActions(&ac)
+	return &ac
+}
+
+func (ac *actions) runAll() {
+	for _, a := range ac.as {
+		go a.fn()
 	}
-	if cf.getStations {
-		didSomething = true
-		wg.Add(1)
-		go func() {
-			runAction(cf, "getStations", "stations", func() (interface{}, error) {
-				return m.GetStations(getStationsConfig(cf))
-			})
-			wg.Done()
-		}()
+	go func() {
+		ac.wg.Wait()
+		close(ac.ch)
+	}()
+
+	for fn := range ac.ch {
+		fn()
 	}
-	if cf.getObservations {
-		didSomething = true
-		wg.Add(1)
-		go func() {
-			runAction(cf, "getObservations", "observations", func() (interface{}, error) {
-				return m.GetObservations(getObservationsConfig(cf))
-			})
-			wg.Done()
-		}()
-	}
-	if cf.getClosetStation {
-		didSomething = true
-		wg.Add(1)
-		go func() {
-			mc := newConfig()
-			if mc.lat == cf.lat || mc.lon == cf.lon {
-				colorize(ColorRed, "getClosetStation error: please specify '--lat' and '--lon'")
-			} else {
-				runAction(cf, "getClosetStation", "closet_station", func() (interface{}, error) {
-					return m.GetClosetStation(client.GetClosetStationConfig{Lat: cf.lat, Lon: cf.lon})
-				})
-			}
-			wg.Done()
-		}()
-	}
-	wg.Wait()
-	if !didSomething {
+
+	if len(ac.as) < 1 {
 		errExit("please invoke at least one method")
 	}
 }
 
-func runAction(cf *config, scope string, filename string, fn func() (interface{}, error)) {
+func runAction(
+	cf *config,
+	ch tch,
+	wg *sync.WaitGroup,
+	scope string,
+	filename string,
+	fn func() (interface{}, error),
+) {
 	var (
 		res  interface{}
 		err  error
 		name string
 	)
-	colorize(ColorBlue, fmt.Sprintf("%s: initialize", scope))
+	defer (*wg).Done()
+	colorize(ColorBlue, fmt.Sprintf("%s: initialize request", scope))
 	if res, err = fn(); err != nil {
 		colorize(ColorRed, fmt.Sprintf("%s error: %v", scope, err))
 	} else {
 		colorize(ColorBlue, fmt.Sprintf("%s: request successful", scope))
 		if !cf.dryRun {
 			if name, err = write(cf.filePath, filename, res); err != nil {
-				colorize(ColorRed, fmt.Sprintf("%s error: %v", scope, err))
+				ch <- func() { colorize(ColorRed, fmt.Sprintf("%s error: %v", scope, err)) }
 			} else {
-				colorize(ColorGreen, fmt.Sprintf("%s: wrote file '%s'", scope, name))
+				ch <- func() { colorize(ColorBlue, fmt.Sprintf("%s: wrote file '%s'", scope, name)) }
 			}
+		}
+	}
+}
+
+func addActions(ac *actions) {
+	cf, ch, wg := ac.cf, ac.ch, ac.wg
+	if ac.cf.getClimateData {
+		wg.Add(1)
+		ac.as = append(ac.as, action{fn: func() {
+			runAction(cf, ch, wg, "getClimateData", "climate_data", func() (interface{}, error) {
+				return ac.c.GetClimateData(getClimateDataConfig(cf))
+			})
+		}})
+	}
+	if ac.cf.getStations {
+		wg.Add(1)
+		ac.as = append(ac.as, action{fn: func() {
+			runAction(cf, ch, wg, "getStations", "stations", func() (interface{}, error) {
+				return ac.m.GetStations(getStationsConfig(cf))
+			})
+		}})
+	}
+	if ac.cf.getObservations {
+		wg.Add(1)
+		ac.as = append(ac.as, action{fn: func() {
+			runAction(cf, ch, wg, "getObservations", "observations", func() (interface{}, error) {
+				return ac.m.GetObservations(getObservationsConfig(cf))
+			})
+		}})
+	}
+	if ac.cf.getClosetStation {
+		mc := newConfig()
+		if mc.lat == cf.lat || mc.lon == cf.lon {
+			colorize(ColorRed, "getClosetStation error: please specify '--lat' and '--lon'")
+		} else {
+			wg.Add(1)
+			ac.as = append(ac.as, action{fn: func() {
+				if mc.lat == cf.lat || mc.lon == cf.lon {
+					ch <- func() { colorize(ColorRed, "getClosetStation error: please specify '--lat' and '--lon'") }
+					wg.Done()
+				} else {
+					runAction(cf, ch, wg, "getClosetStation", "closet_station", func() (interface{}, error) {
+						res, dist, err := ac.m.GetClosetStation(client.GetClosetStationConfig{Lat: cf.lat, Lon: cf.lon})
+						colorize(ColorBlue, fmt.Sprintf("getClosetStation distance: found station %dkm away", int(dist)))
+						return res, err
+					})
+				}
+			}})
 		}
 	}
 }
