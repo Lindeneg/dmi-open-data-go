@@ -6,11 +6,18 @@ Get API keys [here](https://confluence.govcloud.dk/pages/viewpage.action?pageId=
 
 ##### Usage CLI
 
-*tip: set these environmental variables*
-`$DMI_CLIMATE_API_KEY` and `$DMI_METOBS_API_KEY`
+Install
 
 ```
-go run dmi-open-data [...ARGS]
+git clone https://github.com/Lindeneg/dmi-open-data-go.git
+
+cd dmi-open-data-go
+
+go build dmi-open-data.go
+```
+
+```
+$ ./dmi-open-data [...ARGS]
 
 ARGS:
 
