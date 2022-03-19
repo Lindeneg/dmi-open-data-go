@@ -1,4 +1,4 @@
 .env*
 example/
 dmi-open-data
-test.json
+*.json

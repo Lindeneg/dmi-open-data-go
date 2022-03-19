@@ -8,17 +8,17 @@ import (
 	"github.com/lindeneg/dmi-open-data-go/v2/request"
 )
 
-type metObsClient struct {
+type MetObsClient struct {
 	r *request.RequestConfig
 }
 
-func NewMetObsClient(key string) metObsClient {
-	return metObsClient{request.New(key, constants.APIMetObs)}
+func NewMetObsClient(key string) MetObsClient {
+	return MetObsClient{request.New(key, constants.APIMetObs)}
 }
 
 // Get collection of stations in unmarshaled geo-json format
 // Accepts a range of parameters as specified in GetStationsConfig
-func (c metObsClient) GetStations(cf GetStationsConfig) (getStationsResponse, error) {
+func (c MetObsClient) GetStations(cf GetStationsConfig) (getStationsResponse, error) {
 	var (
 		err  error
 		res  getStationsResponse
@@ -42,7 +42,7 @@ func (c metObsClient) GetStations(cf GetStationsConfig) (getStationsResponse, er
 
 // Get raw observations in unmarshaled geo-json format
 // Accepts a range of parameters as specified in GetObservationsConfig
-func (c metObsClient) GetObservations(cf GetObservationsConfig) (getObservationsResponse, error) {
+func (c MetObsClient) GetObservations(cf GetObservationsConfig) (getObservationsResponse, error) {
 	var (
 		err  error
 		res  getObservationsResponse
@@ -66,7 +66,7 @@ func (c metObsClient) GetObservations(cf GetObservationsConfig) (getObservations
 
 // Get closet station given a set of coordinates
 // Accepts a range of parameters as specified in GetClosetStationConfig
-func (c metObsClient) GetClosetStation(cf GetClosetStationConfig) (metObsStationFeature, error) {
+func (c MetObsClient) GetClosetStation(cf GetClosetStationConfig) (metObsStationFeature, float64, error) {
 	var (
 		err  error
 		res  getStationsResponse
@@ -74,7 +74,7 @@ func (c metObsClient) GetClosetStation(cf GetClosetStationConfig) (metObsStation
 		dist float64 = 0xffffff
 	)
 	if res, err = c.GetStations(cf.Filter); err != nil {
-		return cs, err
+		return cs, 0, err
 	}
 	st := res.Features
 	for _, s := range st {
@@ -85,13 +85,13 @@ func (c metObsClient) GetClosetStation(cf GetClosetStationConfig) (metObsStation
 			cs = s
 		}
 	}
-	return cs, nil
+	return cs, dist, nil
 }
 
 // Lists supported MetObsParameters
 // MetObsParameters also accessible on 'constants'
 // All MetObsParameters in 'constants' are prefixed 'M'
-func (metObsClient) GetParameters() []constants.MetObsParameter {
+func (MetObsClient) GetParameters() []constants.MetObsParameter {
 	return constants.MetObsParameters
 }
 

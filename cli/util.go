@@ -16,8 +16,14 @@ const (
 	ColorReset Color = "\u001b[0m"
 )
 
+var (
+	silent = false
+)
+
 func colorize(color Color, message string) {
-	fmt.Println(fmt.Sprintf("%s%s%s", string(color), message, string(ColorReset)))
+	if !silent {
+		fmt.Println(fmt.Sprintf("%s%s%s", string(color), message, string(ColorReset)))
+	}
 }
 
 func errExit(m string) {
@@ -85,5 +91,6 @@ ARGS:
 -o  --observations 	   run metObs method 'GetObservations'
 -cs --closet-station 	   run metObs method 'GetClosetStation'
 -d  --dry-run 	           do not write anything to disk
+-sn --silent 	           do not print logs to stdout
 -h  --help                 outputs the usage`)
 }

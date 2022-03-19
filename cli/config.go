@@ -119,6 +119,10 @@ func parseArg(c *config, arg string, i int) (int, interface{}) {
 		c.dryRun = true
 		return 1, nil
 
+	case "-sn", "--silent":
+		silent = true
+		return 1, nil
+
 	case "-cd", "--climate-data":
 		c.getClimateData = true
 		return 1, nil
@@ -175,24 +179,4 @@ func parseArg(c *config, arg string, i int) (int, interface{}) {
 		colorize(ColorRed, fmt.Sprintf("warning: argument '%s' is not recognized", arg))
 	}
 	return 0, nil
-}
-
-func (c *config) Print() {
-	s := (fmt.Sprintf("climateKey: '%s'\n", c.climateKey) +
-		fmt.Sprintf("metobsKey: '%s'\n", c.metobsKey) +
-		fmt.Sprintf("filePath: '%s'\n", c.filePath) +
-		fmt.Sprintf("limit: '%d'\n", c.limit) +
-		fmt.Sprintf("offset: '%d'\n", c.offset) +
-		fmt.Sprintf("lat: '%f'\n", c.lat) +
-		fmt.Sprintf("lon: '%f'\n", c.lon) +
-		fmt.Sprintf("type: '%s'\n", c.ptype) +
-		fmt.Sprintf("status: '%s'\n", c.status) +
-		fmt.Sprintf("parameterId: '%s'\n", c.parameterId) +
-		fmt.Sprintf("stationId: '%d'\n", c.stationId) +
-		fmt.Sprintf("getClimateData: '%t'\n", c.getClimateData) +
-		fmt.Sprintf("getStations: '%t'\n", c.getStations) +
-		fmt.Sprintf("getObservations: '%t'\n", c.getObservations) +
-		fmt.Sprintf("getClosetStation: '%t'\n", c.getClosetStation) +
-		fmt.Sprintf("dryRun: '%t'", c.dryRun))
-	fmt.Println(s)
 }
