@@ -113,18 +113,13 @@ func addActions(ac *actions) {
 		} else {
 			wg.Add(1)
 			ac.as = append(ac.as, action{fn: func() {
-				if mc.lat == cf.lat || mc.lon == cf.lon {
-					ch <- func() { colorize(ColorRed, "getClosetStation error: please specify '--lat' and '--lon'") }
-					wg.Done()
-				} else {
-					runAction(cf, ch, wg, "getClosetStation", "closet_station", func() (interface{}, error) {
-						res, dist, err := ac.m.GetClosetStation(client.GetClosetStationConfig{Lat: cf.lat, Lon: cf.lon})
-						if err == nil {
-							colorize(ColorBlue, fmt.Sprintf("getClosetStation distance: found station %dkm away", int(dist)))
-						}
-						return res, err
-					})
-				}
+				runAction(cf, ch, wg, "getClosetStation", "closet_station", func() (interface{}, error) {
+					res, dist, err := ac.m.GetClosetStation(client.GetClosetStationConfig{Lat: cf.lat, Lon: cf.lon})
+					if err == nil {
+						colorize(ColorBlue, fmt.Sprintf("getClosetStation distance: found station %dkm away", int(dist)))
+					}
+					return res, err
+				})
 			}})
 		}
 	}
