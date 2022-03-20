@@ -57,14 +57,16 @@ func (c *config) Parse() {
 }
 
 func rmFilePathTailSlash(filePath *string) {
+	dir, _ := os.Getwd()
 	s := *filePath
 	l := len(s) - 1
 	if l == -1 {
-		*filePath = "."
+		*filePath = dir
 	}
 	if l > -1 && string(s[l]) == "/" {
 		*filePath = s[:l]
 	}
+	*filePath = fmt.Sprintf("%s/%s", dir, *filePath)
 }
 
 func checkEnv(c *string, m *string) {

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/lindeneg/dmi-open-data-go/v2/constants"
+	"github.com/lindeneg/dmi-open-data-go/v2/internal/constants"
 )
 
 func constructUrl(r RequestConfig, p string, q Query) (string, error) {
