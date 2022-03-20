@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/lindeneg/dmi-open-data-go/v2/constants"
-	"github.com/lindeneg/dmi-open-data-go/v2/request"
+	"github.com/lindeneg/dmi-open-data-go/v2/internal/constants"
+	"github.com/lindeneg/dmi-open-data-go/v2/internal/request"
 )
 
 type ClimateDataClient struct {

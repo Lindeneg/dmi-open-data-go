@@ -5,38 +5,30 @@ Get API keys [here](https://confluence.govcloud.dk/pages/viewpage.action?pageId=
 
 The two API's used are **Meteorological Observation** (*metObs*) and **Climate Data** (*climateData*).
 
-It is recommended to set the API keys as environmental variables with these respective variables:
+It is recommended to set the API keys as environmental variables:
 `$DMI_CLIMATE_API_KEY` and `$DMI_METOBS_API_KEY`
 
 
 ##### Usage CLI
 
-```
-# Download
-git clone https://github.com/Lindeneg/dmi-open-data-go.git
-
-# Build
-cd dmi-open-data-go && go build dmi-open-data.go
-```
+`go install github.com/lindeneg/dmi-open-data-go/v2@latest`
 
 ```
-# Run
-
-$ ./dmi-open-data [...ARGS]
+$ dmi-open-data [...ARGS]
 
 ARGS:
 
 -c  --climate-key  [STR]   DMI climateData API key
 -m  --metobs-key   [STR]   DMI metObs API key
 -p  --file-path    [STR]   path to write json outputs to
--l  --limit        [INT]   set parameter 'limit'
--f  --offset       [INT]   set parameter 'offset'
--a  --lat          [FLOAT] set latitude
--n  --lon          [FLOAT] set longitude
 -t  --type         [STR]   set parameter 'type'
 -st --status       [STR]   set parameter 'status'
+-l  --limit        [INT]   set parameter 'limit'
+-f  --offset       [INT]   set parameter 'offset'
 -pi --param-id     [INT]   set parameter 'parameterId'
 -si --station-id   [INT]   set parameter 'stationId'
+-a  --lat          [FLOAT] set latitude
+-n  --lon          [FLOAT] set longitude
 -cd --climate-data 	   run climateData method 'GetClimateData'
 -s  --stations 	           run metObs method 'GetStations'
 -o  --observations 	   run metObs method 'GetObservations'
@@ -61,7 +53,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lindeneg/dmi-open-data-go/v2/client"
+	"github.com/lindeneg/dmi-open-data-go/v2/internal/client"
 )
 
 func main() {
