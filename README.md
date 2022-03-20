@@ -53,7 +53,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lindeneg/dmi-open-data-go/v2/internal/client"
+	"github.com/lindeneg/dmi-open-data-go/v2/client"
 )
 
 func main() {

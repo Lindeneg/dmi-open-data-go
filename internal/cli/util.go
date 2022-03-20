@@ -71,21 +71,21 @@ func usage() {
 	fmt.Println(`usage: dmi-open-data
 src:   https://github.com/lindeneg/dmi-open-data-go
 
-go run dmi-open-data [...ARGS]
+go run dmi-open-data-go [...ARGS]
 
 ARGS:
 
 -c  --climate-key  [STR]   DMI climateData API key
 -m  --metobs-key   [STR]   DMI metObs API key
 -p  --file-path    [STR]   path to write json outputs to
--l  --limit        [INT]   set parameter 'limit'
--f  --offset       [INT]   set parameter 'offset'
--a  --lat          [FLOAT] set latitude
--n  --lon          [FLOAT] set longitude
 -t  --type         [STR]   set parameter 'type'
 -st --status       [STR]   set parameter 'status'
+-l  --limit        [INT]   set parameter 'limit'
+-f  --offset       [INT]   set parameter 'offset'
 -pi --param-id     [INT]   set parameter 'parameterId'
 -si --station-id   [INT]   set parameter 'stationId'
+-a  --lat          [FLOAT] set latitude
+-n  --lon          [FLOAT] set longitude
 -cd --climate-data 	   run climateData method 'GetClimateData'
 -s  --stations 	           run metObs method 'GetStations'
 -o  --observations 	   run metObs method 'GetObservations'
