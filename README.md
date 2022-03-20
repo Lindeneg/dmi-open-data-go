@@ -5,7 +5,7 @@ Get API keys [here](https://confluence.govcloud.dk/pages/viewpage.action?pageId=
 
 The two API's used are **Meteorological Observation** (*metObs*) and **Climate Data** (*climateData*).
 
-It is recommended to set the API keys as environmental variables with these respective variables:
+It is recommended to set the API keys as environmental variables:
 `$DMI_CLIMATE_API_KEY` and `$DMI_METOBS_API_KEY`
 
 
