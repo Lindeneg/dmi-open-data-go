@@ -9,9 +9,19 @@ It is recommended to set the API keys as environmental variables:
 `$DMI_CLIMATE_API_KEY` and `$DMI_METOBS_API_KEY`
 
 
-##### Usage CLI
+##### Usage
 
 `go install -i github.com/lindeneg/dmi-open-data-go/v2/cmd/dmi-open-data@latest`
+
+or
+
+```
+git clone https://github.com/Lindeneg/dmi-open-data-go.git
+
+cd dmi-open-data-go
+
+go build cmd/dmi-open-data/dmi-open-data.go
+```
 
 ```
 $ dmi-open-data [...ARGS]
