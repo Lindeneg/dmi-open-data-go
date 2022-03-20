@@ -11,10 +11,10 @@ It is recommended to set the API keys as environmental variables:
 
 ##### Usage CLI
 
-`go install github.com/lindeneg/dmi-open-data-go/v2@latest`
+`go install -i github.com/lindeneg/dmi-open-data-go/v2/cmd/dmi-open-data@latest`
 
 ```
-$ dmi-open-data-go [...ARGS]
+$ dmi-open-data [...ARGS]
 
 ARGS:
 
@@ -53,7 +53,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lindeneg/dmi-open-data-go/v2/client"
+	"github.com/lindeneg/dmi-open-data-go/v2/pkg/client"
 )
 
 func main() {
