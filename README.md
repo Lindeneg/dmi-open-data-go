@@ -14,7 +14,7 @@ It is recommended to set the API keys as environmental variables:
 `go install github.com/lindeneg/dmi-open-data-go/v2@latest`
 
 ```
-$ dmi-open-data [...ARGS]
+$ dmi-open-data-go [...ARGS]
 
 ARGS:
 
