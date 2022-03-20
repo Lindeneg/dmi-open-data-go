@@ -44,7 +44,7 @@ func (c *config) Parse() {
 			valid += e
 			ignore = v
 		}
-		rmFilePathTailSlash(&c.filePath)
+		getPath(&c.filePath)
 		if valid > 0 {
 			colorize(ColorBlue, "successfully parsed config")
 			if c.dryRun {
@@ -56,17 +56,18 @@ func (c *config) Parse() {
 	errExit("no valid arguments specified")
 }
 
-func rmFilePathTailSlash(filePath *string) {
-	dir, _ := os.Getwd()
+func getPath(filePath *string) {
+	r, _ := os.Getwd()
 	s := *filePath
 	l := len(s) - 1
-	if l == -1 {
-		*filePath = dir
+	if s != "" {
+		if l > -1 && string(s[l]) == "/" {
+			r += "/" + s[:l]
+		} else {
+			r += "/" + s
+		}
 	}
-	if l > -1 && string(s[l]) == "/" {
-		*filePath = s[:l]
-	}
-	*filePath = fmt.Sprintf("%s/%s", dir, *filePath)
+	*filePath = r
 }
 
 func checkEnv(c *string, m *string) {
