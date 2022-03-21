@@ -11,17 +11,9 @@ It is recommended to set the API keys as environmental variables:
 
 ##### Usage
 
-`go install -i github.com/lindeneg/dmi-open-data-go/v2/cmd/dmi-open-data@latest`
+*Note: Remember to set `$GOPATH` and, optionally, `$GOBIN`. Read more [here](https://go.dev/doc/tutorial/compile-install)*
 
-or
-
-```
-git clone https://github.com/Lindeneg/dmi-open-data-go.git
-
-cd dmi-open-data-go
-
-go build cmd/dmi-open-data/dmi-open-data.go
-```
+`go install github.com/lindeneg/dmi-open-data-go/v2/cmd/dmi-open-data@latest`
 
 ```
 $ dmi-open-data [...ARGS]
@@ -46,4 +38,41 @@ ARGS:
 -d  --dry-run 	           do not write anything to disk
 -sn --silent 	           do not print logs to stdout
 -h  --help                 outputs the usage
+```
+
+Or use as a package:
+
+`go get github.com/lindeneg/dmi-open-data-go/v2`
+
+Example:
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/lindeneg/dmi-open-data-go/v2/pkg/client"
+)
+
+func main() {
+	// also NewMetObsClient
+
+	c := client.NewClimateDataClient(os.Getenv("DMI_CLIMATE_API_KEY"))
+
+	// example method: returns unmarshaled geo-json data ... or an error
+	obs, err := c.GetClimateData(client.GetClimateDataConfig{Limit: 1000})
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	fmt.Printf("Returned %d entries\n", obs.NumberReturned)
+
+	if obs.NumberReturned > 0 {
+		fmt.Printf("First entry: %v\n", obs.Features[0])
+	}
+}
 ```
