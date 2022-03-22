@@ -31,12 +31,12 @@ ARGS:
 -si --station-id   [INT]   set parameter 'stationId'
 -a  --lat          [FLOAT] set latitude
 -n  --lon          [FLOAT] set longitude
--cd --climate-data 	   run climateData method 'GetClimateData'
--s  --stations 	           run metObs method 'GetStations'
--o  --observations 	   run metObs method 'GetObservations'
--cs --closet-station 	   run metObs method 'GetClosetStation'
--d  --dry-run 	           do not write anything to disk
--sn --silent 	           do not print logs to stdout
+-cd --climate-data         run climateData method 'GetClimateData'
+-s  --stations             run metObs method 'GetStations'
+-o  --observations         run metObs method 'GetObservations'
+-cs --closet-station       run metObs method 'GetClosetStation'
+-d  --dry-run              do not write anything to disk
+-sn --silent               do not print logs to stdout
 -h  --help                 outputs the usage
 ```
 
