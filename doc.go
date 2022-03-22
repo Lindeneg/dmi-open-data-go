@@ -1,8 +1,21 @@
 /*
+
+Wrapper for Danish Meteorological Institute (DMI) APIs:
+
+	- Meteorological Observation -> metObs
+	- Climate Data               -> climateData
+
+Get API keys: https://confluence.govcloud.dk/pages/viewpage.action?pageId=26476690
+
+It is recommended to set the API keys as environmental variables:
+	- $DMI_CLIMATE_API_KEY
+	- $DMI_METOBS_API_KEY
+
+Usage:
+
 $ dmi-open-data [...ARGS]
 
 ARGS:
-
 	-c  --climate-key  [STR]   DMI climateData API key
 	-m  --metobs-key   [STR]   DMI metObs API key
 	-p  --file-path    [STR]   path to write json outputs to
