@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/lindeneg/dmi-open-data-go/v2/internal/file"
-	"github.com/lindeneg/dmi-open-data-go/v2/pkg/client"
+	"github.com/lindeneg/dmi-open-data-go/internal/file"
+	"github.com/lindeneg/dmi-open-data-go/pkg/client"
 )
 
 type tch chan func()

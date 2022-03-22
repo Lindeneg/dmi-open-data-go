@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lindeneg/dmi-open-data-go/v2/pkg/client"
+	"github.com/lindeneg/dmi-open-data-go/pkg/client"
 )
 
 type Color string

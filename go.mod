@@ -1,3 +1,3 @@
-module github.com/lindeneg/dmi-open-data-go/v2
+module github.com/lindeneg/dmi-open-data-go
 
 go 1.17

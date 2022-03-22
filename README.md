@@ -13,7 +13,7 @@ It is recommended to set the API keys as environmental variables:
 
 *Note: Remember to set `$GOPATH` and, optionally, `$GOBIN`. Read more [here](https://go.dev/doc/tutorial/compile-install)*
 
-`go install github.com/lindeneg/dmi-open-data-go/v2/cmd/dmi-open-data@latest`
+`go install github.com/lindeneg/dmi-open-data-go/cmd/dmi-open-data@latest`
 
 ```
 $ dmi-open-data [...ARGS]
@@ -42,7 +42,7 @@ ARGS:
 
 Or use as a package:
 
-`go get github.com/lindeneg/dmi-open-data-go/v2`
+`go get github.com/lindeneg/dmi-open-data-go`
 
 Example:
 
@@ -53,7 +53,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/lindeneg/dmi-open-data-go/v2/pkg/client"
+	"github.com/lindeneg/dmi-open-data-go/pkg/client"
 )
 
 func main() {
